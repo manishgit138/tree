@@ -102,6 +102,9 @@ jobs:
           python -m pytest -vv --pyargs tree && \
           popd && \
           deactivate'
+    - name: "Check wheel"
+      run: |
+        ls -l
     - uses: actions/upload-artifact@v2
       if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'release' && github.event.action == 'created') }}
       with:
