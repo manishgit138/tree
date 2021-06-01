@@ -79,6 +79,7 @@ jobs:
       uses: docker/setup-qemu-action@v1
     - name: "Build wheel"
       run: |
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
         docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
           ${{ env.img }} \
           bash -exc '${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
@@ -87,12 +88,11 @@ jobs:
           python -m pip install pytest && \
           python -m pip install -r requirements-test.txt && \
           python -VV && \
-          yum -y install wget sudo && \
+          yum -y install wget && \
           wget -O "bazel-linux-arm64" "https://github.com/bazelbuild/bazel/releases/download/3.6.0/bazel-3.6.0-linux-arm64" && \
           chmod +x bazel-linux-arm64 && \
           mv bazel-linux-arm64 /usr/bin/bazel && \
           file /usr/bin/bazel && \
-          export PATH=/usr/bin/bazel:$PATH
           bazel version && \
           bazel info release && \
           python setup.py sdist && \
@@ -106,36 +106,3 @@ jobs:
       if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'release' && github.event.action == 'created') }}
       with:
         path: dm_tree*.whl
-  run_aarch64:
-    runs-on: ubuntu-18.04
-    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
-    strategy:
-      matrix:
-        include:
-          - arch: aarch64
-            distro: ubuntu18.04
-    steps:
-      - uses: actions/checkout@v2.1.0
-      - uses: uraimo/run-on-arch-action@v2.0.5
-        name: Build artifact
-        id: build
-        with:
-          arch: ${{ matrix.arch }}
-          distro: ${{ matrix.distro }}
-          setup: |
-            mkdir -p "${PWD}/artifacts"
-          dockerRunArgs: |
-            --volume "${PWD}/artifacts:/artifacts"
-          env: | # YAML, but pipe character is necessary
-            artifact_name: git-${{ matrix.distro }}_${{ matrix.arch }}
-          shell: /bin/sh
-          run: |
-            uname -m
-            apt-get update -q -y
-            apt-get install -y wget file
-            wget -O "bazel-linux-arm64" "https://github.com/bazelbuild/bazel/releases/download/3.6.0/bazel-3.6.0-linux-arm64"
-            chmod +x bazel-linux-arm64
-            mv bazel-linux-arm64 /usr/local/bin/bazel
-            file /usr/local/bin/bazel
-            bazel version
-            bazel info release
