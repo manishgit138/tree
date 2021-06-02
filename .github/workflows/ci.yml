@@ -84,7 +84,7 @@ jobs:
           ${{ env.img }} \
           bash -exc '${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
           source .env/bin/activate && \
-          echo -e "\e[1;46m Installing dependencies \e[0m" && \
+          echo -e "\e[1;34m Installing dependencies \e[0m" && \
           python -m pip install --upgrade pip setuptools wheel && \
           python -m pip install pytest && \
           python -m pip install -r requirements-test.txt && \
@@ -93,7 +93,7 @@ jobs:
           wget -O "bazel-linux-arm64" "https://github.com/bazelbuild/bazel/releases/download/4.1.0/bazel-4.1.0-linux-arm64" && \
           chmod +x bazel-linux-arm64 && \
           mv bazel-linux-arm64 /usr/local/bin/bazel && \
-          echo -e "\e[1;40m Installing bazel \e[0m" && \
+          echo -e "\e[1;34m Installing bazel \e[0m" && \
           python setup.py sdist && \
           pip wheel --verbose --no-deps --no-clean dist/dm-tree*.tar.gz && \
           pip install dm_tree*.whl && \
