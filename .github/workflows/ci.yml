@@ -84,6 +84,7 @@ jobs:
           ${{ env.img }} \
           bash -exc '${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
           source .env/bin/activate && \
+          'TERM=xterm-256color' echo "Installing dependencies" && \
           python -m pip install --upgrade pip setuptools wheel && \
           python -m pip install pytest && \
           python -m pip install -r requirements-test.txt && \
